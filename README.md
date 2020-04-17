@@ -1,6 +1,6 @@
 # 简介
 
-针对Debian系统的Docker镜像。
+Debian系统的基础Docker镜像。基于官方Debian 8.11镜像。
 
 
 

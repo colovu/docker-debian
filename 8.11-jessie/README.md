@@ -1,13 +1,13 @@
 # 简介
 
-基于的Alpine系统的Docker镜像。基于官方Debian 8.11镜像。
+Debian系统的基础Docker镜像。基于官方Debian 8.11镜像。
 
 
 
 ## 基本信息
 
 * 镜像地址：endial/debian:v8.11
-* 依赖镜像：debian:8.11
+  * 依赖镜像：debian:8.11
 
 
 
