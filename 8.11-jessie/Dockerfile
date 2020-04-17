@@ -3,7 +3,7 @@ FROM debian:8.11
 LABEL \
 	"Version"="v8.11" \
 	"Description"="Docker image for Debian 8.11." \
-	"Dockerfile"="https://github.com/endial/docker-libs" \
+	"Dockerfile"="https://github.com/endial/docker-debian" \
 	"Vendor"="Endial Fang (endial@126.com)"
 
 RUN set -eux \
