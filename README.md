@@ -2,12 +2,14 @@
 
 Debian系统的基础Docker镜像。基于官方Debian 8.11镜像。
 
+**版本信息：**
 
+- 8、8.11、jessie、latest
 
-## 基本信息
+**镜像信息：**
 
-* 镜像地址：endial/debian:8.11
-  * 依赖镜像：debian:8.11
+* 镜像地址：colovu/debian:latest
+  * 依赖镜像：debian:latest
 
 
 
@@ -46,7 +48,7 @@ Debian系统的基础Docker镜像。基于官方Debian 8.11镜像。
 下载镜像：
 
 ```shell
-docker pull endial/debian:8.11
+docker pull colovu/debian:latest
 ```
 
 查看镜像：
@@ -62,17 +64,17 @@ docker images
 生成并运行一个新的容器：
 
 ```shell
-docker run -it --rm endial/debian:8.11 /bin/bash
+docker run -it --rm colovu/debian:latest /bin/bash
 ```
 
 - `-it`：使用交互式终端启动容器
 - `--rm`：退出时删除容器
-- `endial/debian:8.11`：包含版本信息的镜像名称
+- `colovu/debian:latest`：包含版本信息的镜像名称
 - `/bin/bash`：在容器中执行`/bin/bash`命令
 
 
 
 ----
 
-本文原始来源 [Endial Fang](https://github.com/endial) @ [Github.com](https://github.com)
+本文原始来源 [Endial Fang](https://github.com/colovu) @ [Github.com](https://github.com)
 
