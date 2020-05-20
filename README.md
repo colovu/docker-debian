@@ -4,9 +4,8 @@
 
 **版本信息：**
 
-- 9、stretch、latest
-
-
+- 10、buster、latest
+- 9、stretch
 
 **镜像信息：**
 
@@ -20,17 +19,17 @@
 - 修改默认源为阿里云镜像
 
 ```shell
-deb http://mirrors.aliyun.com/debian/ stretch main contrib non-free
-deb-src http://mirrors.aliyun.com/debian/ stretch main contrib non-free
+deb http://mirrors.aliyun.com/debian/ buster main contrib non-free
+deb-src http://mirrors.aliyun.com/debian/ buster main contrib non-free
 
-deb http://mirrors.aliyun.com/debian/ stretch-updates main contrib non-free
-deb-src http://mirrors.aliyun.com/debian/ stretch-updates main contrib non-free
+deb http://mirrors.aliyun.com/debian/ buster-updates main contrib non-free
+deb-src http://mirrors.aliyun.com/debian/ buster-updates main contrib non-free
 
-deb http://mirrors.aliyun.com/debian/ stretch-proposed-updates main contrib non-free
-deb-src http://mirrors.aliyun.com/debian/ stretch-proposed-updates main contrib non-free
+deb http://mirrors.aliyun.com/debian/ buster-proposed-updates main contrib non-free
+deb-src http://mirrors.aliyun.com/debian/ buster-proposed-updates main contrib non-free
 
-deb http://mirrors.aliyun.com/debian/ stretch-backports main contrib non-free
-deb-src http://mirrors.aliyun.com/debian/ stretch-backports main contrib non-free
+deb http://mirrors.aliyun.com/debian/ buster-backports main contrib non-free
+deb-src http://mirrors.aliyun.com/debian/ buster-backports main contrib non-free
 ```
 
 - 增加locales，并默认设置为`en_US.utf8`
