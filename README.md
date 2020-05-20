@@ -1,15 +1,17 @@
 # 简介
 
-Debian系统的基础Docker镜像。基于官方Debian 8.11镜像。
+[Debian 系统](https://www.debian.org/)的基础 Docker 镜像。基于官方 [Debian LTS 版本 slim](https://hub.docker.com/_/debian) 镜像。
 
 **版本信息：**
 
-- 8、8.11、jessie、latest
+- 9、stretch、latest
+
+
 
 **镜像信息：**
 
 * 镜像地址：colovu/debian:latest
-  * 依赖镜像：debian:latest
+  * 依赖镜像：debian:TAG-slim
 
 
 
@@ -18,20 +20,21 @@ Debian系统的基础Docker镜像。基于官方Debian 8.11镜像。
 - 修改默认源为阿里云镜像
 
 ```shell
-  deb http://mirrors.aliyun.com/debian/ jessie main contrib non-free
-  deb-src http://mirrors.aliyun.com/debian/ jessie main contrib non-free
+deb http://mirrors.aliyun.com/debian/ stretch main contrib non-free
+deb-src http://mirrors.aliyun.com/debian/ stretch main contrib non-free
 
-  deb http://mirrors.aliyun.com/debian/ jessie-updates main contrib non-free
-  deb-src http://mirrors.aliyun.com/debian/ jessie-updates main contrib non-free
+deb http://mirrors.aliyun.com/debian/ stretch-updates main contrib non-free
+deb-src http://mirrors.aliyun.com/debian/ stretch-updates main contrib non-free
 
-  #deb http://mirrors.aliyun.com/debian/ jessie-proposed-updates main non-free contrib
-  #deb-src http://mirrors.aliyun.com/debian/ jessie-proposed-updates main non-free contrib
+deb http://mirrors.aliyun.com/debian/ stretch-proposed-updates main contrib non-free
+deb-src http://mirrors.aliyun.com/debian/ stretch-proposed-updates main contrib non-free
 
-  #deb http://mirrors.aliyun.com/debian/ jessie-backports main contrib non-free
-  #deb-src http://mirrors.aliyun.com/debian/ jessie-backports main contrib non-free
+deb http://mirrors.aliyun.com/debian/ stretch-backports main contrib non-free
+deb-src http://mirrors.aliyun.com/debian/ stretch-backports main contrib non-free
 ```
 
-- 增加locales，并默认设置为`en_US`
+- 增加locales，并默认设置为`en_US.utf8`
+- 增加gosu
 
 
 
@@ -50,6 +53,10 @@ Debian系统的基础Docker镜像。基于官方Debian 8.11镜像。
 ```shell
 docker pull colovu/debian:latest
 ```
+
+- latest：为镜像的TAG，可针对性选择不同的TAG进行下载
+
+
 
 查看镜像：
 
@@ -70,7 +77,7 @@ docker run -it --rm colovu/debian:latest /bin/bash
 - `-it`：使用交互式终端启动容器
 - `--rm`：退出时删除容器
 - `colovu/debian:latest`：包含版本信息的镜像名称
-- `/bin/bash`：在容器中执行`/bin/bash`命令
+- `/bin/bash`：在容器中执行`/bin/bash`命令；如果不执行命令，容器会在启动后立即结束并退出。
 
 
 
