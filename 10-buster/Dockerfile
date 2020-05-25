@@ -47,7 +47,7 @@ deb-src http://mirrors.aliyun.com/debian/ buster-backports main contrib non-free
 	wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
 	wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc"; \
 	\
-# 安装软件包需要使用的GPG证书
+# 安装软件包需要使用的GPG证书，并验证软件
 	export GNUPGHOME="$(mktemp -d)"; \
 	for key in ${GPG_KEYS}; do \
 		gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys "${key}"|| \
@@ -62,10 +62,8 @@ deb-src http://mirrors.aliyun.com/debian/ buster-backports main contrib non-free
 	\
 	strip /usr/local/bin/gosu; \
 	chmod +x /usr/local/bin/gosu; \
-# 验证新安装的软件是否工作正常
-	gosu nobody true; \
 	\
-# 查找新安装的应用相应的依赖软件包，并表示为'manual'，防止后续自动清理时被删除
+# 查找新安装的应用相应的依赖软件包，并标识为'manual'，防止后续自动清理时被删除
 	apt-mark auto '.*' > /dev/null; \
 	{ [ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; }; \
 	find /usr/local -type f -executable -exec ldd '{}' ';' \
@@ -75,10 +73,14 @@ deb-src http://mirrors.aliyun.com/debian/ buster-backports main contrib non-free
 		| cut -d: -f1 \
 		| sort -u \
 		| xargs -r apt-mark manual; \
+		\
 # 删除临时软件包，清理缓存
 	apt purge -y --auto-remove --force-yes -o APT::AutoRemove::RecommendsImportant=false $fetchDeps; \
 	apt autoclean -y; \
-	rm -rf /var/lib/apt/lists/*;
+	rm -rf /var/lib/apt/lists/*; \
+	\
+# 验证新安装的软件是否工作正常，正常情况下放置在镜像制作最后
+	gosu nobody true;
 
 ENV LANG en_US.utf8
 
