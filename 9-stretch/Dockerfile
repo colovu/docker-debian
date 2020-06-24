@@ -4,7 +4,7 @@ ARG gosu_ver=1.12
 
 LABEL \
 	"Version"="v9" \
-	"Description"="Docker image for Debian 9(Jessie)." \
+	"Description"="Docker image for Debian 9(Stretch)." \
 	"Dockerfile"="https://github.com/colovu/docker-debian" \
 	"Vendor"="Endial Fang (endial@126.com)"
 
