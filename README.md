@@ -4,8 +4,8 @@
 
 **版本信息：**
 
-- 10、buster、latest
-- 9、stretch
+- 10、10-buster、latest
+- 9、9-stretch
 
 **镜像信息：**
 
@@ -39,7 +39,7 @@ deb-src http://mirrors.aliyun.com/debian/ buster-backports main contrib non-free
 
 ## 数据卷
 
-该容器没有定义默认的数据卷。该容器仅用作创建其他业务容器的基础容器。
+该容器没有定义默认的数据卷。该容器主要用作创建其他业务容器的基础容器。
 
 
 
