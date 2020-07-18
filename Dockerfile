@@ -28,13 +28,14 @@ deb-src http://mirrors.aliyun.com/debian/ buster-backports main contrib non-free
 	\
 	apt-get update; \
 	apt-get upgrade -y; \
+	apt-get install -y --no-install-recommends locales; \
 	savedAptMark="$(apt-mark showmanual)"; \
-	apt-get install -y locales; \
 	\
 # 安装 UTF-8 编码。需要安装 locales 软件包
-	localedef -c -i en_US -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8; \
-	echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen && locale-gen; \
-	update-locale LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8 LC_ALL=en_US.UTF-8 LC_MESSAGES=POSIX && dpkg-reconfigure locales; \
+#	localedef -c -i en_US -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8; \
+	sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && locale-gen; \
+	update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8 LC_MESSAGES=POSIX; \
+	dpkg-reconfigure -f noninteractive locales; \
 	\
 	fetchDeps=" \
 		ca-certificates \
@@ -52,7 +53,7 @@ deb-src http://mirrors.aliyun.com/debian/ buster-backports main contrib non-free
 	wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/${gosu_ver}/gosu-$dpkgArch.asc"; \
 	\
 # 安装软件包需要使用的GPG证书，并验证软件
-	GPG_KEYS="0xB42F6819007F00F88E364FD4036A9C25BF357DD4"
+	GPG_KEYS="0xB42F6819007F00F88E364FD4036A9C25BF357DD4"; \
 	export GNUPGHOME="$(mktemp -d)"; \
 	for key in ${GPG_KEYS}; do \
 		gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys "${key}"|| \
