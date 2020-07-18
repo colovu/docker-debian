@@ -28,13 +28,14 @@ deb-src http://mirrors.aliyun.com/debian/ stretch-backports main contrib non-fre
 	\
 	apt-get update; \
 	apt-get upgrade -y; \
+	apt-get install -y --no-install-recommends locales; \
 	savedAptMark="$(apt-mark showmanual)"; \
-	apt-get install -y locales; \
 	\
 # 安装 UTF-8 编码。需要安装 locales 软件包
-	localedef -c -i en_US -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8; \
-	echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen && locale-gen; \
-	update-locale LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8 LC_ALL=en_US.UTF-8 LC_MESSAGES=POSIX && dpkg-reconfigure locales; \
+#	localedef -c -i en_US -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8; \
+	sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && locale-gen; \
+	update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8 LC_MESSAGES=POSIX; \
+	dpkg-reconfigure -f noninteractive locales; \
 	\
 	fetchDeps=" \
 		ca-certificates \
