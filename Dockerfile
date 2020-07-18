@@ -53,7 +53,7 @@ deb-src http://mirrors.aliyun.com/debian/ stretch-backports main contrib non-fre
 	wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/${gosu_ver}/gosu-$dpkgArch.asc"; \
 	\
 # 安装软件包需要使用的GPG证书，并验证软件
-	GPG_KEYS="0xB42F6819007F00F88E364FD4036A9C25BF357DD4"
+	GPG_KEYS="0xB42F6819007F00F88E364FD4036A9C25BF357DD4"; \
 	export GNUPGHOME="$(mktemp -d)"; \
 	for key in ${GPG_KEYS}; do \
 		gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys "${key}"|| \
