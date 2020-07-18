@@ -83,7 +83,7 @@ deb-src http://mirrors.aliyun.com/debian/ stretch-backports main contrib non-fre
 # 删除临时软件包，清理缓存
 	apt-get purge -y --auto-remove --force-yes -o APT::AutoRemove::RecommendsImportant=false $fetchDeps; \
 	apt-get autoclean -y; \
-	rm -rf /var/lib/apt/lists/*;
+	rm -rf /var/lib/apt/lists/*; \
 	\
 # 验证新安装的软件是否工作正常，正常情况下放置在镜像制作最后
 	gosu --version;
