@@ -2,6 +2,13 @@
 #
 FROM debian:buster-slim
 
+# ARG参数使用"--build-arg"指定，如 "--build-arg apt_source=debian"
+# sources.list 可使用版本：163 / debian / tencent / ustc / aliyun / huawei
+ARG apt_source=debian
+
+# 编译镜像时指定本地服务器地址，如 "--build-arg local_url=http://172.29.14.108/dist-files/"
+ARG local_url=""
+
 ARG gosu_ver=1.12
 
 LABEL \
@@ -10,32 +17,28 @@ LABEL \
 	"Dockerfile"="https://github.com/colovu/docker-debian" \
 	"Vendor"="Endial Fang (endial@126.com)"
 
+COPY sources/* /etc/apt/
+
 RUN set -eux; \
 # 启用非交互模式安装软件包，规避Readline/Teletype等警告
 	export DEBIAN_FRONTEND=noninteractive; \
 	\
-	mv /etc/apt/sources.list /etc/apt/sources.list.bak; \
-	echo '\
-deb http://mirrors.aliyun.com/debian/ buster main contrib non-free \n\
-deb-src http://mirrors.aliyun.com/debian/ buster main contrib non-free \n\
-deb http://mirrors.aliyun.com/debian/ buster-updates main contrib non-free \n\
-deb-src http://mirrors.aliyun.com/debian/ buster-updates main contrib non-free \n\
-deb http://mirrors.aliyun.com/debian/ buster-proposed-updates main contrib non-free \n\
-deb-src http://mirrors.aliyun.com/debian/ buster-proposed-updates main contrib non-free \n\
-deb http://mirrors.aliyun.com/debian/ buster-backports main contrib non-free \n\
-deb-src http://mirrors.aliyun.com/debian/ buster-backports main contrib non-free \n\
-' >/etc/apt/sources.list; \
+# 更改源为当次编译指定的源
+	cp /etc/apt/sources.list.${apt_source} /etc/apt/sources.list; \
 	\
 	apt-get update; \
 	apt-get upgrade -y; \
 	apt-get install -y --no-install-recommends locales; \
 	savedAptMark="$(apt-mark showmanual)"; \
 	\
-# 安装 UTF-8 编码。需要安装 locales 软件包
-#	localedef -c -i en_US -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8; \
+# 配置系统默认编码为 en_US.UTF-8 编码
 	sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && locale-gen; \
 	update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8 LC_MESSAGES=POSIX; \
-	dpkg-reconfigure -f noninteractive locales; \
+	dpkg-reconfigure locales; \
+	\
+# 配置系统默认 TimeZone 信息为 中国/上海
+	ln -fs /usr/share/zoneinfo/Asia/Shanghai /etc/localtime; \
+	dpkg-reconfigure tzdata; \
 	\
 	fetchDeps=" \
 		ca-certificates \
@@ -46,11 +49,16 @@ deb-src http://mirrors.aliyun.com/debian/ buster-backports main contrib non-free
 		\
 		binutils \
 	"; \
-	apt-get install -y --no-install-recommends $fetchDeps; \
+	apt-get install -y --no-install-recommends ${fetchDeps}; \
 	\
 	dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
-	wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/${gosu_ver}/gosu-$dpkgArch"; \
-	wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/${gosu_ver}/gosu-$dpkgArch.asc"; \
+	if [ -n ${local_url} ]; then \
+		wget -O /usr/local/bin/gosu "${local_url}/gosu-${dpkgArch}"; \
+		wget -O /usr/local/bin/gosu.asc "${local_url}/gosu-${dpkgArch}.asc"; \
+	else \
+		wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/${gosu_ver}/gosu-$dpkgArch"; \
+		wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/${gosu_ver}/gosu-$dpkgArch.asc"; \
+	fi; \
 	\
 # 安装软件包需要使用的GPG证书，并验证软件
 	GPG_KEYS="0xB42F6819007F00F88E364FD4036A9C25BF357DD4"; \
@@ -63,7 +71,7 @@ deb-src http://mirrors.aliyun.com/debian/ buster-backports main contrib non-free
 	done; \
 	gpg --batch --verify "/usr/local/bin/gosu.asc" "/usr/local/bin/gosu"; \
 	command -v gpgconf > /dev/null && gpgconf --kill all; \
-	rm -rf "$GNUPGHOME"; \
+	rm -rf "${GNUPGHOME}"; \
 	\
 	strip /usr/local/bin/gosu; \
 	chmod +x /usr/local/bin/gosu; \
@@ -81,7 +89,7 @@ deb-src http://mirrors.aliyun.com/debian/ buster-backports main contrib non-free
 		| xargs -r apt-mark manual; \
 		\
 # 删除临时软件包，清理缓存
-	apt-get purge -y --auto-remove --force-yes -o APT::AutoRemove::RecommendsImportant=false $fetchDeps; \
+	apt-get purge -y --auto-remove --force-yes -o APT::AutoRemove::RecommendsImportant=false ${fetchDeps}; \
 	apt-get autoclean -y; \
 	rm -rf /var/lib/apt/lists/*; \
 	\
