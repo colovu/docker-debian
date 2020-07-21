@@ -14,7 +14,7 @@
 
 **与官方镜像差异：**
 
-- 增加 `163、debian、tencent、ustc、aliyun、huawei` 源配置文件，可在编译时通过 `ARG` 变量`apt_source`进行选择
+- 增加 `default、tencent、ustc、aliyun、huawei` 源配置文件，可在编译时通过 `ARG` 变量`apt_source`进行选择
 - 更新已安装的软件包
 - 增加`locales`，并设置默认编码格式为`en_US.utf8`
 - 增加`gosu`

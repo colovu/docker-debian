@@ -2,9 +2,9 @@
 #
 FROM debian:buster-slim
 
-# ARG参数使用"--build-arg"指定，如 "--build-arg apt_source=debian"
-# sources.list 可使用版本：163 / debian / tencent / ustc / aliyun / huawei
-ARG apt_source=debian
+# ARG参数使用"--build-arg"指定，如 "--build-arg apt_source=tencent"
+# sources.list 可使用版本：default / tencent / ustc / aliyun / huawei
+ARG apt_source=default
 
 # 编译镜像时指定本地服务器地址，如 "--build-arg local_url=http://172.29.14.108/dist-files/"
 ARG local_url=""

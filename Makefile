@@ -1,7 +1,7 @@
 
 current_branch := $(shell git rev-parse --abbrev-ref HEAD)
 
-# Sources List: 163 / debian / tencent / ustc / aliyun / huawei
+# Sources List: default / tencent / ustc / aliyun / huawei
 build-arg := --build-arg apt_source=tencent 
 build-arg += --build-arg local_url=http://192.168.200.29/dist-files/
 
