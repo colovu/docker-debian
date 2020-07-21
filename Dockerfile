@@ -52,7 +52,7 @@ RUN set -eux; \
 	apt-get install -y --no-install-recommends ${fetchDeps}; \
 	\
 	dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
-	if [ -n ${local_url} ]; then \
+	if [ -n "${local_url}" ]; then \
 		wget -O /usr/local/bin/gosu "${local_url}/gosu-${dpkgArch}"; \
 		wget -O /usr/local/bin/gosu.asc "${local_url}/gosu-${dpkgArch}.asc"; \
 	else \
