@@ -19,26 +19,30 @@ LABEL \
 
 COPY sources/* /etc/apt/
 
-RUN set -eux; \
-# 启用非交互模式安装软件包，规避Readline/Teletype等警告
+# 镜像内相应应用及依赖软件包的安装脚本；以下脚本可按照不同需求拆分为多个段，但需要注意各个段在结束前需要清空缓存
+RUN \
+# 设置程序使用静默安装，而非交互模式；默认情况下，类似 tzdata/gnupg/ca-certificates 等程序配置需要交互
 	export DEBIAN_FRONTEND=noninteractive; \
+	\
+# 设置 shell 执行参数，分别为 -e(命令执行错误则退出脚本) -u(变量未定义则报错) -x(打印实际待执行的命令行)
+	set -eux; \
 	\
 # 更改源为当次编译指定的源
 	cp /etc/apt/sources.list.${apt_source} /etc/apt/sources.list; \
 	\
-	apt-get update; \
-	apt-get upgrade -y; \
-	apt-get install -y --no-install-recommends locales; \
+	apt update; \
+	apt upgrade -y; \
+	apt install -y --no-install-recommends locales apt-utils; \
 	savedAptMark="$(apt-mark showmanual)"; \
 	\
 # 配置系统默认编码为 en_US.UTF-8 编码
 	sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && locale-gen; \
 	update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8 LC_MESSAGES=POSIX; \
-	dpkg-reconfigure locales; \
+	dpkg-reconfigure -f noninteractive locales; \
 	\
 # 配置系统默认 TimeZone 信息为 中国/上海
 	ln -fs /usr/share/zoneinfo/Asia/Shanghai /etc/localtime; \
-	dpkg-reconfigure tzdata; \
+	dpkg-reconfigure -f noninteractive tzdata; \
 	\
 	fetchDeps=" \
 		ca-certificates \
@@ -49,7 +53,7 @@ RUN set -eux; \
 		\
 		binutils \
 	"; \
-	apt-get install -y --no-install-recommends ${fetchDeps}; \
+	apt install -y --no-install-recommends ${fetchDeps}; \
 	\
 	dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
 	if [ -n "${local_url}" ]; then \
@@ -61,7 +65,7 @@ RUN set -eux; \
 	fi; \
 	\
 # 安装软件包需要使用的GPG证书，并验证软件
-	GPG_KEYS="0xB42F6819007F00F88E364FD4036A9C25BF357DD4"; \
+	export GPG_KEYS="0xB42F6819007F00F88E364FD4036A9C25BF357DD4"; \
 	export GNUPGHOME="$(mktemp -d)"; \
 	for key in ${GPG_KEYS}; do \
 		gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys "${key}"|| \
@@ -77,7 +81,7 @@ RUN set -eux; \
 	chmod +x /usr/local/bin/gosu; \
 	rm -rf /usr/local/bin/gosu.asc; \
 	\
-# 查找新安装的应用相应的依赖软件包，并标识为'manual'，防止后续自动清理时被删除
+# 查找新安装的应用及应用依赖软件包，并标识为'manual'，防止后续自动清理时被删除
 	apt-mark auto '.*' > /dev/null; \
 	{ [ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; }; \
 	find /usr/local -type f -executable -exec ldd '{}' ';' \
@@ -87,14 +91,15 @@ RUN set -eux; \
 		| cut -d: -f1 \
 		| sort -u \
 		| xargs -r apt-mark manual; \
-		\
-# 删除临时软件包，清理缓存
-	apt-get purge -y --auto-remove --force-yes -o APT::AutoRemove::RecommendsImportant=false ${fetchDeps}; \
-	apt-get autoclean -y; \
+	\
+# 删除安装的临时依赖软件包，清理缓存
+	apt purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false ${fetchDeps}; \
+	apt autoclean -y; \
 	rm -rf /var/lib/apt/lists/*; \
 	\
 # 验证新安装的软件是否工作正常，正常情况下放置在镜像制作最后
 	gosu --version;
+	:;
 
 ENV LANG=en_US.UTF-8 \
 	LANGUAGE=en_US.UTF-8 \
