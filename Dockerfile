@@ -30,9 +30,9 @@ RUN \
 # 更改源为当次编译指定的源
 	cp /etc/apt/sources.list.${apt_source} /etc/apt/sources.list; \
 	\
-	apt update; \
-	apt upgrade -y; \
-	apt install -y --no-install-recommends locales apt-utils; \
+	apt-get update; \
+	apt-get upgrade -y; \
+	apt-get install -y --no-install-recommends locales apt-utils; \
 	savedAptMark="$(apt-mark showmanual)"; \
 	\
 # 配置系统默认编码为 en_US.UTF-8 编码
@@ -53,7 +53,7 @@ RUN \
 		\
 		binutils \
 	"; \
-	apt install -y --no-install-recommends ${fetchDeps}; \
+	apt-get install -y --no-install-recommends ${fetchDeps}; \
 	\
 	dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
 	if [ -n "${local_url}" ]; then \
@@ -93,8 +93,8 @@ RUN \
 		| xargs -r apt-mark manual; \
 	\
 # 删除安装的临时依赖软件包，清理缓存
-	apt purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false ${fetchDeps}; \
-	apt autoclean -y; \
+	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false ${fetchDeps}; \
+	apt-get autoclean -y; \
 	rm -rf /var/lib/apt/lists/*; \
 	\
 # 验证新安装的软件是否工作正常，正常情况下放置在镜像制作最后
