@@ -1,0 +1,157 @@
+#!/bin/bash
+# shell 执行参数，分别为 -e(命令执行错误则退出脚本) -u(变量未定义则报错) -x(打印实际待执行的命令行)
+. /usr/local/scripts/functions
+
+print_usage() {
+  LOG "Usage: download_pkg <COMMAND> <PACKAGE-NAME> \"<URLS>\" [OPTIONS]"
+  LOG ""
+  LOG "Download and install Third-Part packages"
+  LOG ""
+  LOG "Commands:"
+  LOG "  install                    Download and install a package."
+  LOG "  unpack                     Download and unpack a package."
+  LOG ""
+  LOG "Options:"
+  LOG "  -g, --checkpgp             Package release bucket."
+  LOG "  -s, --checksum             SHA256 verification checksum."
+  LOG "  -h, --help                 Show this help message and exit."
+  LOG ""
+  LOG "PACKAGE-NAME: Name with extern name"
+  LOG "URLS: String with URL list"
+  LOG ""
+  LOG "Examples:"
+  LOG "  - Unpack package"
+  LOG "    \$ download_pkg unpack redis-5.0.8.tar.gz \"http://download.redis.io/releases/\""
+  LOG ""
+  LOG "  - Verify and Install package"
+  LOG "    \$ download_pkg install redis-5.0.8.tar.gz \"http://download.redis.io/releases/\" --checksum 42cf86a114d2a451b898fcda96acd4d01062a7dbaaad2801d9164a36f898f596"
+  LOG ""
+}
+
+check_pgp() {
+    local name_asc=${1:?missing asc file name}
+    local name=${2:?missing file name}
+    local keys="${3:?missing key id}"
+	
+    GNUPGHOME="$(mktemp -d)"
+	if which gpg >/dev/null 2>&1; then
+		for key in $keys; do
+	        gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys "${key}" || 
+	        gpg --batch --keyserver pgp.mit.edu --recv-keys "${key}" || 
+	        gpg --batch --keyserver keys.gnupg.net --recv-keys "${key}" || 
+	        gpg --batch --keyserver keyserver.pgp.com --recv-keys "${key}"; 
+	    done
+	    gpg --batch --verify "$name_asc" "$name"
+	    command -v gpgconf > /dev/null && gpgconf --kill all
+	fi
+}
+
+# 获取并解析参数 
+ARGS=$(getopt -o g:s:h -l "checkpgp:,checksum:,help" -n "download-pkg" -- "$@")
+if [ $? -ne 0 ];
+then
+  exit 1
+fi
+
+eval set -- "$ARGS";
+while true; do
+  case "$1" in
+    -g|--checkpgp)
+      shift
+      if [ -n "$1" ]; then
+        PACKAGE_KEYS=$1
+        shift
+      fi
+      ;;
+    -s|--checksum)
+      shift
+      if [ -n "$1" ]; then
+        PACKAGE_SHA256=$1
+        shift
+      fi
+      ;;
+    -h|--help)
+      print_usage
+      exit 0
+      ;;
+    --)
+      shift
+      break
+      ;;
+  esac
+done
+
+# 检测输入的命令是否合法
+case "$1" in
+  install|unpack) ;;
+  *)
+    error "Unrecognized command: $1"
+    print_usage
+    exit 1
+    ;;
+esac
+
+# 检测输入参数是否足够，需要至少提供软件包名称 及 下载路径
+if [ $# -lt 3 ]; then
+  print_usage
+  exit 1
+fi
+
+INSTALL_ROOT=/usr/local
+CACHE_ROOT=/tmp
+
+PACKAGE="$2"
+PACKAGE_URLS=$3
+
+cd $INSTALL_ROOT
+
+LOG_I "Downloading $PACKAGE package"
+for url in $PACKAGE_URLS; do
+	LOG_D "Try $url/$PACKAGE"
+    if wget -O "$CACHE_ROOT/$PACKAGE" "$url/$PACKAGE" && [ -s "$CACHE_ROOT/$PACKAGE" ]; then
+        if [ -n "$PACKAGE_KEYS" ]; then
+            wget -O "$CACHE_ROOT/$PACKAGE.asc" "$url/$PACKAGE.asc"
+            if [ ! -e "$CACHE_ROOT/$PACKAGE.asc" ]; then
+                wget -O "$CACHE_ROOT/$PACKAGE.asc" "$url/$PACKAGE.sig"
+            fi
+        fi
+        success=1
+        break
+    fi
+done
+
+if [ "$PACKAGE_SHA256" ]; then
+  	LOG_I "Verifying package integrity"
+  	echo "$PACKAGE_SHA256 *$CACHE_ROOT/$PACKAGE" | sha256sum -c -
+fi
+
+if [ -e "$CACHE_ROOT/$PACKAGE.asc" ]; then
+	LOG_I "Verifying package with PGP"
+    check_pgp "$CACHE_ROOT/$PACKAGE.asc" "$CACHE_ROOT/$PACKAGE" "$PACKAGE_KEYS"
+fi
+
+# If the tarball has too many files, it can trigger a bug
+# in overlayfs when using tar. Install bsdtar in the container image
+# to workaround it. As the overhead is too big (~40 MB), it is not added by
+# default. Source: https://github.com/coreos/bugs/issues/1095
+
+
+# 安装或解压软件
+case "$1" in
+	install) 
+		LOG_I "Installing $PACKAGE"
+    cp $CACHE_ROOT/$PACKAGE /usr/local/bin/
+		;;
+	unpack) 
+		if ! tar tzf $CACHE_ROOT/$PACKAGE >/dev/null 2>&1; then
+			LOG_E "Invalid or corrupt '$PACKAGE' package."
+			exit 1
+		fi
+		LOG_I "Unpacking $PACKAGE" 
+		if which bsdtar >/dev/null 2>&1; then
+  			bsdtar -xf $CACHE_ROOT/$PACKAGE
+		else
+  			tar xzf $CACHE_ROOT/$PACKAGE
+		fi
+		;;
+esac

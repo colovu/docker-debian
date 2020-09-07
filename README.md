@@ -1,24 +1,38 @@
-# 简介
+# Debian
 
 [Debian 系统](https://www.debian.org/)的基础 Docker 镜像。基于官方 [Debian LTS 版本 slim](https://hub.docker.com/_/debian) 镜像。
 
 **版本信息：**
 
-- 10、10-buster、latest
-- 9、9-stretch
+- 10、latest
 
 **镜像信息：**
 
 * 镜像地址：colovu/debian:latest
-  * 依赖镜像：debian:TAG-slim
+  * 依赖镜像：debian:buster-slim
 
 **与官方镜像差异：**
 
 - 增加 `default、tencent、ustc、aliyun、huawei` 源配置文件，可在编译时通过 `ARG` 变量`apt_source`进行选择
+- 增加常用 Shell 脚本文件
 - 更新已安装的软件包
 - 增加`locales`，并设置默认编码格式为`en_US.utf8`
 - 增加`gosu`
 - 设置默认时区信息为 `Asia/Shanghai`
+- 默认增加 nss_wrapper 支持
+
+
+## **TL;DR**
+
+Docker 快速启动命令：
+
+```shell
+$ docker run -it colovu/debian /bin/bash
+```
+
+
+
+---
 
 
 
@@ -27,7 +41,7 @@
 **下载镜像：**
 
 ```shell
-docker pull colovu/debian:latest
+$ docker pull colovu/debian:latest
 ```
 
 - latest：为镜像的TAG，可针对性选择不同的TAG进行下载
@@ -35,13 +49,13 @@ docker pull colovu/debian:latest
 **查看镜像：**
 
 ```shell
-docker images
+$ docker images
 ```
 
-**生成并运行容器：**
+**命令行方式运行容器：**
 
 ```shell
-docker run -it --rm colovu/debian:latest /bin/bash
+$ docker run -it --rm colovu/debian:latest /bin/bash
 ```
 
 - `-it`：使用交互式终端启动容器
@@ -49,6 +63,30 @@ docker run -it --rm colovu/debian:latest /bin/bash
 - `colovu/debian:latest`：包含版本信息的镜像名称
 - `/bin/bash`：在容器中执行`/bin/bash`命令；如果不执行命令，容器会在启动后立即结束并退出。
 
+以该方式启动后，直接进入容器的命令行操作界面。如果需要退出，直接使用命令`exit`退出。
+
+**后台方式运行容器：**
+
+```shell
+$ docker run -d --name test colovu/debian:latest tail /dev/stderr
+```
+
+- `--name test`：命名容器为`test`
+- `-d`：以后台进程方式启动容器
+- `colovu/debian:latest`：包含TAG信息的镜像名称
+- `tail /dev/stderr`：在容器中执行`tail /dev/stderr`命令，以防止容器直接退出
+
+
+
+以该方式启动后，如果想进入容器，可以使用以下命令：
+
+```shell
+$ docker exec -it test /bin/bash
+```
+
+- `-it`：使用交互式执行
+- `test`：之前启动的容器名
+- `/bin/bash`：执行的命令
 
 
 ## 配置修改
@@ -91,6 +129,10 @@ $ export LC_ALL=zh_CN.UTF-8 LANG=zh_CN.UTF-8 LANGUAGE=zh_CN.UTF-8
 
 更新成功后，可使用`locale`命令查看字符编码信息。
 
+
+## 更新记录
+
+- 10、latest
 
 
 ----

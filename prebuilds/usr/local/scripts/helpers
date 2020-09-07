@@ -1,0 +1,5 @@
+#!/bin/bash
+# Ver: 1.0 by Endial Fang (endial@126.com)
+
+. /usr/local/scripts/functions
+

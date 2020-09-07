@@ -1,0 +1,55 @@
+#!/bin/bash
+# shell 执行参数，分别为 -e(命令执行错误则退出脚本) -u(变量未定义则报错) -x(打印实际待执行的命令行)
+set -eux
+
+print_usage() {
+  LOG "Usage: install_pkg <PACKAGE-NAME>"
+  LOG ""
+  LOG "Download and install packages"
+  LOG ""
+  LOG "Options:"
+  LOG "  -h, --help                 Show this help message and exit."
+  LOG ""
+  LOG "Examples:"
+  LOG "  - Unpack package"
+  LOG "    \$ install_pkg bash curl"
+  LOG ""
+}
+
+if [ $# -lt 1 ]; then
+  print_usage
+  exit 1
+fi
+
+case "$1" in
+  -h|--help)
+      print_usage
+      exit 0
+      ;;
+esac
+
+retry=0
+max=2
+until [ $retry -gt $max ]; do
+    set +e
+    (
+      apt-get update &&
+      apt-get upgrade -y &&
+      apt-get install -y --no-install-recommends "$@"
+    )
+    CODE=$?
+    set -e
+    if [ $CODE -eq 0 ]; then
+        break
+    fi
+    if [ $retry -eq $max ]; then
+        exit $CODE
+    fi
+    echo "apt failed, retrying"
+    retry=$(($retry + 1))
+done
+
+apt-get purge -y --auto-remove
+apt-get autoclean -y
+
+rm -r /var/lib/apt/lists /var/cache/apt/archives || :
