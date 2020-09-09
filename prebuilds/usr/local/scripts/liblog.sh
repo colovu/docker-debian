@@ -1,7 +1,7 @@
 #!/bin/bash
-# Ver: 1.0 by Endial Fang (endial@126.com)
+# Ver: 1.1 by Endial Fang (endial@126.com)
 
-[[ ${ENV_DEBUG:-false} = true ]] && set -x
+#[[ ${ENV_DEBUG:-false} = true ]] && set -x
 
 MODULE="$(basename "$0")"
 
@@ -40,7 +40,8 @@ stderr_print() {
 #   $1 - 日志类型
 #   $2 - 日志信息
 LOG() {
-    stderr_print "${ENV_DEBUG:+${CYAN}${MODULE:-} ${MAGENTA}$(date "+%T.%2N ")}${RESET}${*}"
+    #stderr_print "${ENV_DEBUG:+${CYAN}${MODULE:-} ${MAGENTA}$(date "+%T.%2N ")}${RESET}${*}"
+    printf "${ENV_DEBUG:+${CYAN}${MODULE:-} ${MAGENTA}%s}${RESET} %b\n" "$(date "+%T")" "${*}"
 }
 
 # 输出调试类日志信息，尽量少使用
@@ -51,7 +52,7 @@ LOG_D() {
     local -r bool="${ENV_DEBUG:-false}"
     shopt -s nocasematch
     if [[ "$bool" = 1 || "$bool" =~ ^(yes|true)$ ]]; then
-        LOG "${BLUE}DEBUG${RESET} ==> ${*}"
+        LOG "${BLUE}DBG${RESET}: ${*}"
     fi   
 }
 
@@ -60,7 +61,7 @@ LOG_D() {
 #   $1 - 日志类型
 #   $2 - 日志信息
 LOG_I() {
-    LOG "${GREEN}INFO ${RESET} ==> ${*}"
+    LOG "${GREEN}INF${RESET}: ${*}"
 }
 
 # 输出警告类日志信息至sterr
@@ -68,7 +69,7 @@ LOG_I() {
 #   $1 - 日志类型
 #   $2 - 日志信息
 LOG_W() {
-    LOG "${YELLOW}WARN ${RESET} ==> ${*}"
+    LOG "${YELLOW}WRN${RESET}: ${*}"
 }
 
 # 输出错误类日志信息至sterr，并退出脚本
@@ -76,31 +77,5 @@ LOG_W() {
 #   $1 - 日志类型
 #   $2 - 日志信息
 LOG_E() {
-    LOG "${RED}ERROR${RESET} ==> ${*}"
-}
-
-# 打印包含包含Logo的欢迎信息
-# 全局变量:
-#   APP_NAME
-print_image_welcome_page() {
-    [[ -n "${APP_NAME}" ]] && github_url="/docker-${APP_NAME}"
-
-    LOG_I '  ____      _ '
-    LOG_I ' / ___|___ | | _____   ___   _ '
-    LOG_I '| |   / _ \| |/ _ \ \ / / | | |  '"Docker : ${BOLD}${APP_NAME:-undefined}${RESET}"
-    LOG_I '| |__| (_) | | (_) \ V /| |_| |  '"Version: ${BOLD}${APP_VERSION:-0.0}${RESET}"
-    LOG_I ' \____\___/|_|\___/ \_/  \__,_|  '"PowerBy: ${BOLD}Endial@126.com${RESET}"
-    LOG_D " Project Repo: https://github.com/colovu/${github_url}"
-    LOG_I ""
-
-}
-
-# 根据需要打印欢迎信息
-# 全局变量:
-#   ENV_DISABLE_WELCOME_MESSAGE
-#   APP_NAME
-docker_print_welcome() {
-	if [[ "$(id -u)" = "0" ]]; then
-        print_image_welcome_page
-    fi
+    LOG "${RED}ERR${RESET}: ${*}"
 }

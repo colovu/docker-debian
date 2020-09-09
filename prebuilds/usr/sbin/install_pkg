@@ -1,19 +1,21 @@
 #!/bin/bash
+# Ver: 1.0 by Endial Fang (endial@126.com)
+# 
 # shell 执行参数，分别为 -e(命令执行错误则退出脚本) -u(变量未定义则报错) -x(打印实际待执行的命令行)
 set -eux
 
 print_usage() {
-  LOG "Usage: install_pkg <PACKAGE-NAME>"
-  LOG ""
-  LOG "Download and install packages"
-  LOG ""
-  LOG "Options:"
-  LOG "  -h, --help                 Show this help message and exit."
-  LOG ""
-  LOG "Examples:"
-  LOG "  - Unpack package"
-  LOG "    \$ install_pkg bash curl"
-  LOG ""
+  echo "Usage: install_pkg <PACKAGE-NAME>"
+  echo ""
+  echo "Download and install packages"
+  echo ""
+  echo "Options:"
+  echo "  -h, --help                 Show this help message and exit."
+  echo ""
+  echo "Examples:"
+  echo "  - Unpack package"
+  echo "    \$ install_pkg bash curl"
+  echo ""
 }
 
 if [ $# -lt 1 ]; then
@@ -33,6 +35,7 @@ max=2
 until [ $retry -gt $max ]; do
     set +e
     (
+      export DEBIAN_FRONTEND=noninteractive &&
       apt-get update &&
       apt-get upgrade -y &&
       apt-get install -y --no-install-recommends "$@"

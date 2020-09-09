@@ -44,7 +44,8 @@ $ docker run -it colovu/debian /bin/bash
 $ docker pull colovu/debian:latest
 ```
 
-- latest：为镜像的TAG，可针对性选择不同的TAG进行下载
+- latest：为镜像的 TAG，可针对性选择不同的 TAG 进行下载
+- 不指定 TAG 时，默认下载 latest 镜像
 
 **查看镜像：**
 

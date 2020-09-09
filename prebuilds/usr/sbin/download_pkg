@@ -1,6 +1,9 @@
 #!/bin/bash
+# Ver: 1.0 by Endial Fang (endial@126.com)
+# 
 # shell 执行参数，分别为 -e(命令执行错误则退出脚本) -u(变量未定义则报错) -x(打印实际待执行的命令行)
-. /usr/local/scripts/functions
+set -eux
+. /usr/local/scripts/liblog.sh
 
 print_usage() {
   LOG "Usage: download_pkg <COMMAND> <PACKAGE-NAME> \"<URLS>\" [OPTIONS]"
