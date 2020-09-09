@@ -18,7 +18,7 @@ build-arg:=--build-arg apt_source=tencent
 local_ip:=`ifconfig -a|grep inet|grep -v 127.0.0.1|grep -v inet6|awk '{print $$2}'|tr -d "addr:"`
 build-arg+=--build-arg local_url=http://$(local_ip)/dist-files
 
-.PHONY: build clean clearclean upgrade
+.PHONY: build clean clearclean upgrade tag push
 
 build:
 	@echo "Build $(app_name):$(current_tag)"
@@ -36,6 +36,16 @@ clean:
 clearclean: clean
 	@echo "Clean all images for current application..."
 	@docker images | grep "$(app_name) " | awk '{print $$3}' | xargs docker rmi -f
+
+tag:
+	@echo "Add tag: $(local_registory)/$(app_name):latest"
+	@docker tag $(app_name):latest $(local_registory)/$(app_name):latest
+
+push: tag
+	@echo "Push: $(local_registory)/$(app_name):latest"
+	@docker push $(local_registory)/$(app_name):latest
+	@echo "Push: $(app_name):latest"
+	@docker push $(app_name):latest
 
 # 更新所有 colovu 仓库的镜像 
 upgrade: 

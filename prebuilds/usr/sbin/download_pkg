@@ -143,7 +143,7 @@ fi
 case "$1" in
 	install) 
 		LOG_I "Installing $PACKAGE"
-    cp $CACHE_ROOT/$PACKAGE /usr/local/bin/
+		cp $CACHE_ROOT/$PACKAGE /usr/local/bin/
 		;;
 	unpack) 
 		if ! tar tzf $CACHE_ROOT/$PACKAGE >/dev/null 2>&1; then
@@ -154,7 +154,7 @@ case "$1" in
 		if which bsdtar >/dev/null 2>&1; then
   			bsdtar -xf $CACHE_ROOT/$PACKAGE
 		else
-  			tar xzf $CACHE_ROOT/$PACKAGE
+  			tar xzf $CACHE_ROOT/$PACKAGE --no-same-owner
 		fi
 		;;
 esac
