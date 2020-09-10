@@ -113,13 +113,11 @@ for url in $PACKAGE_URLS; do
 	LOG_D "Try $url/$PACKAGE"
     if wget -O "$CACHE_ROOT/$PACKAGE" "$url/$PACKAGE" && [ -s "$CACHE_ROOT/$PACKAGE" ]; then
         if [ -n "${PACKAGE_KEYS:-}" ]; then
-            wget -O "$CACHE_ROOT/$PACKAGE.asc" "$url/$PACKAGE.asc"
-            if [ ! -e "$CACHE_ROOT/$PACKAGE.asc" ]; then
-                wget -O "$CACHE_ROOT/$PACKAGE.asc" "$url/$PACKAGE.sig"
+            wget -O "$CACHE_ROOT/$PACKAGE.asc" "$url/$PACKAGE.asc" || wget -O "$CACHE_ROOT/$PACKAGE.asc" "$url/$PACKAGE.sign"
+            if [ -e "$CACHE_ROOT/$PACKAGE.asc" ]; then
+                break
             fi
         fi
-        success=1
-        break
     fi
 done
 
@@ -158,3 +156,4 @@ case "$1" in
 		fi
 		;;
 esac
+

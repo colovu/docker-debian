@@ -2,6 +2,7 @@
 # Ver: 1.1 by Endial Fang (endial@126.com)
 
 #[[ ${ENV_DEBUG:-false} = true ]] && set -x
+set +x
 
 MODULE="$(basename "$0")"
 

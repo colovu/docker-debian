@@ -4,3 +4,4 @@
 # shell 执行参数，分别为 -e(命令执行错误则退出脚本) -u(变量未定义则报错) -x(打印实际待执行的命令行)
 set -eux
 cp /etc/apt/sources/sources.list.${1:-default} /etc/apt/sources.list
+
