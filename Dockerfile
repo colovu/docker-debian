@@ -31,6 +31,8 @@ FROM debian:buster-slim
 ARG apt_source=default
 ARG local_url=""
 
+ENV APP_NAME=debian-base
+
 LABEL   "Version"="v10" \
 	"Description"="Docker image for Debian 10(Buster)." \
 	"Dockerfile"="https://github.com/colovu/docker-debian" \

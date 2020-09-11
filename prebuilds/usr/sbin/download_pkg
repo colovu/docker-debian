@@ -110,14 +110,15 @@ cd $INSTALL_ROOT
 
 LOG_I "Downloading $PACKAGE package"
 for url in $PACKAGE_URLS; do
-	LOG_D "Try $url/$PACKAGE"
+  LOG_D "Try $url/$PACKAGE"
     if wget -O "$CACHE_ROOT/$PACKAGE" "$url/$PACKAGE" && [ -s "$CACHE_ROOT/$PACKAGE" ]; then
         if [ -n "${PACKAGE_KEYS:-}" ]; then
-            wget -O "$CACHE_ROOT/$PACKAGE.asc" "$url/$PACKAGE.asc" || wget -O "$CACHE_ROOT/$PACKAGE.asc" "$url/$PACKAGE.sign"
-            if [ -e "$CACHE_ROOT/$PACKAGE.asc" ]; then
-                break
+            wget -O "$CACHE_ROOT/$PACKAGE.asc" "$url/$PACKAGE.asc" || wget -O "$CACHE_ROOT/$PACKAGE.asc" "$url/$PACKAGE.sign" || :
+            if [ ! -e "$CACHE_ROOT/$PACKAGE.asc" ]; then
+              exit 1
             fi
         fi
+        break
     fi
 done
 
