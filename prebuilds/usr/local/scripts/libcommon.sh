@@ -35,8 +35,8 @@ print_command_help() {
     local arg
     for arg; do
         case "$arg" in
-            -'?'|--help|-V|--version)
-                exec "${APP_EXEC:-/bin/bash}" "${arg}"
+            -'?'|--help|-V|--version|-version)
+                exec "$@"
                 exit
                 ;;
         esac
