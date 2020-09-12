@@ -2,8 +2,6 @@
 # Ver: 1.1 by Endial Fang (endial@126.com)
 
 #[[ ${ENV_DEBUG:-false} = true ]] && set -x
-set +x
-
 MODULE="$(basename "$0")"
 
 RESET='\033[0m'
@@ -41,7 +39,14 @@ stderr_print() {
 #   $1 - 日志类型
 #   $2 - 日志信息
 LOG() {
-    stderr_print "${CYAN}${APP_NAME:-}${ENV_DEBUG:+:${MODULE:-} ${MAGENTA}$(date "+%T.%2N")}${RESET} ${*}"
+    local -r bool="${ENV_DEBUG:-false}"
+    shopt -s nocasematch
+    if [[ "$bool" = 1 || "$bool" =~ ^(yes|true)$ ]]; then
+        debugInfo="${CYAN}${APP_NAME:-}:${MODULE:-}"
+    else
+        debugInfo="${CYAN}${APP_NAME:-}"
+    fi  
+    stderr_print "${debugInfo} ${MAGENTA}$(date "+%T")}${RESET} ${*}"
 }
 
 # 输出调试类日志信息，尽量少使用
