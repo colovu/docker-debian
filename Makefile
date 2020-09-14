@@ -8,8 +8,8 @@ app_name := colovu/debian
 # 	<镜像名>:<分支名>-<Git ID>				# Git 仓库且无文件修改直接编译 	
 # 	<镜像名>:<分支名>-<年月日>-<时分秒>		# Git 仓库有文件修改后的编译
 # 	<镜像名>:latest-<年月日>-<时分秒>		# 非 Git 仓库编译
-current_subversion:=$(shell if [[ -d .git ]]; then git rev-parse --short HEAD; else date +%y%m%d-%H%M%S; fi)
-current_tag:=$(shell if [[ -d .git ]]; then git rev-parse --abbrev-ref HEAD | sed -e 's/master/latest/'; else echo "latest"; fi)-$(current_subversion)
+current_subversion:=$(shell if [ ! `git status >/dev/null 2>&1` ]; then git rev-parse --short HEAD; else date +%y%m%d-%H%M%S; fi)
+current_tag:=$(shell if [ ! `git status >/dev/null 2>&1` ]; then git rev-parse --abbrev-ref HEAD | sed -e 's/master/latest/'; else echo "latest"; fi)-$(current_subversion)
 
 # Sources List: default / tencent / ustc / aliyun / huawei
 build-arg:=--build-arg apt_source=tencent
@@ -50,4 +50,4 @@ push: tag
 # 更新所有 colovu 仓库的镜像 
 upgrade: 
 	@echo "Upgrade all images..."
-	@docker images | grep 'colovu' | grep -v '<none>' | grep -v "latest-" | awk '{print $$1":"$$2}' | xargs -L 1 docker pull
+	@docker images | grep 'colovu' | grep -v '<none>' | grep -v "latest-" | awk '{print $$1":"$$2}' | sort -u | xargs -L 1 docker pull
