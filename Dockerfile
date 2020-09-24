@@ -42,7 +42,9 @@ COPY prebuilds /
 RUN select_source ${apt_source}
 RUN install_pkg locales apt-utils tini libnss-wrapper
 RUN set -eux; \
-	sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && locale-gen; \
+	sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen; \
+	sed -i -e 's/# zh_CN.UTF-8 UTF-8/zh_CN.UTF-8 UTF-8/' /etc/locale.gen; \
+	locale-gen; \
 	update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8 LC_MESSAGES=POSIX; \
 	dpkg-reconfigure -f noninteractive locales; \
 	\
