@@ -20,6 +20,7 @@
 - 增加`gosu`
 - 设置默认时区信息为 `Asia/Shanghai`
 - 默认增加 nss_wrapper 支持
+- 默认增加 wget 软件，用作镜像健康检查
 
 
 ## **TL;DR**
