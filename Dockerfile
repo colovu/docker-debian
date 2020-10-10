@@ -40,7 +40,7 @@ LABEL   "Version"="v10" \
 
 COPY prebuilds /
 RUN select_source ${apt_source}
-RUN install_pkg locales apt-utils tini libnss-wrapper
+RUN install_pkg locales apt-utils tini libnss-wrapper wget
 RUN set -eux; \
 	sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen; \
 	sed -i -e 's/# zh_CN.UTF-8 UTF-8/zh_CN.UTF-8 UTF-8/' /etc/locale.gen; \
