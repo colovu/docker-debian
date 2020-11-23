@@ -1,5 +1,7 @@
 #!/bin/bash
 # Ver: 1.1 by Endial Fang (endial@126.com)
+# 
+# 日志输出函数库
 
 #[[ ${ENV_DEBUG:-false} = true ]] && set -x
 MODULE="$(basename "$0")"

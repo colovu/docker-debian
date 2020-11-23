@@ -1,21 +1,21 @@
-# Ver: 1.4 by Endial Fang (endial@126.com)
+# Ver: 1.6 by Endial Fang (endial@126.com)
 #
 # 当前 Docker 镜像的编译脚本
 
 app_name := colovu/debian
 
 # 生成镜像TAG，类似：
-# 	<镜像名>:<分支名>-<Git ID>				# Git 仓库且无文件修改直接编译 	
+# 	<镜像名>:<分支名>-<Git ID>		# Git 仓库且无文件修改直接编译 	
 # 	<镜像名>:<分支名>-<年月日>-<时分秒>		# Git 仓库有文件修改后的编译
 # 	<镜像名>:latest-<年月日>-<时分秒>		# 非 Git 仓库编译
 current_subversion:=$(shell if [ ! `git status >/dev/null 2>&1` ]; then git rev-parse --short HEAD; else date +%y%m%d-%H%M%S; fi)
-current_tag:=$(shell if [ ! `git status >/dev/null 2>&1` ]; then git rev-parse --abbrev-ref HEAD | sed -e 's/master/latest/'; else echo "latest"; fi)-$(current_subversion)
+current_tag:=local-$(shell if [ ! `git status >/dev/null 2>&1` ]; then git rev-parse --abbrev-ref HEAD | sed -e 's/master/latest/'; else echo "latest"; fi)-$(current_subversion)
 
 # Sources List: default / tencent / ustc / aliyun / huawei
 build-arg:=--build-arg apt_source=tencent
 
 # 设置本地下载服务器路径，加速调试时的本地编译速度
-local_ip:=`ifconfig -a|grep inet|grep -v 127.0.0.1|grep -v inet6|awk '{print $$2}'|tr -d "addr:"`
+local_ip:=`echo "en0 eth0" |xargs -n1 ip addr show 2>/dev/null|grep inet|grep -v 127.0.0.1|grep -v inet6|tr "/" " "|awk '{print $$2}'`
 build-arg+=--build-arg local_url=http://$(local_ip)/dist-files
 
 .PHONY: build clean clearclean upgrade tag push
