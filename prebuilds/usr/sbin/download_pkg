@@ -11,6 +11,7 @@ print_usage() {
   LOG "Download and install Third-Part packages"
   LOG ""
   LOG "Commands:"
+  LOG "  download                   Download a package."
   LOG "  install                    Download and install a package."
   LOG "  unpack                     Download and unpack a package."
   LOG ""
@@ -86,7 +87,7 @@ done
 
 # 检测输入的命令是否合法
 case "$1" in
-  install|unpack) ;;
+  download|install|unpack) ;;
   *)
     error "Unrecognized command: $1"
     print_usage
@@ -140,12 +141,15 @@ fi
 
 # 安装或解压软件
 case "$1" in
+	download)
+		LOG_I "Download success: $CACHE_ROOT/$PACKAGE"
+		;;
 	install) 
 		LOG_I "Installing $PACKAGE"
 		cp $CACHE_ROOT/$PACKAGE /usr/local/bin/
 		;;
 	unpack) 
-		if ! tar tzf $CACHE_ROOT/$PACKAGE >/dev/null 2>&1; then
+		if ! tar -taf $CACHE_ROOT/$PACKAGE >/dev/null 2>&1; then
 			LOG_E "Invalid or corrupt '$PACKAGE' package."
 			exit 1
 		fi
@@ -153,7 +157,7 @@ case "$1" in
 		if which bsdtar >/dev/null 2>&1; then
   			bsdtar -xf $CACHE_ROOT/$PACKAGE
 		else
-  			tar xzf $CACHE_ROOT/$PACKAGE --no-same-owner
+        tar --no-same-owner -xaf $CACHE_ROOT/$PACKAGE
 		fi
 		;;
 esac

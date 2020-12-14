@@ -1,7 +1,8 @@
-# Ver: 1.6 by Endial Fang (endial@126.com)
+# Ver: 1.7 by Endial Fang (endial@126.com)
 #
 # 当前 Docker 镜像的编译脚本
 
+registry_url :=registry.cn-shenzhen.aliyuncs.com
 app_name := colovu/debian
 
 # 生成镜像TAG，类似：
@@ -12,19 +13,19 @@ current_subversion:=$(shell if [ ! `git status >/dev/null 2>&1` ]; then git rev-
 current_tag:=local-$(shell if [ ! `git status >/dev/null 2>&1` ]; then git rev-parse --abbrev-ref HEAD | sed -e 's/master/latest/'; else echo "latest"; fi)-$(current_subversion)
 
 # Sources List: default / tencent / ustc / aliyun / huawei
-build-arg:=--build-arg apt_source=tencent
+build-arg:=--build-arg apt_source=aliyun
 
 # 设置本地下载服务器路径，加速调试时的本地编译速度
 local_ip:=`echo "en0 eth0" |xargs -n1 ip addr show 2>/dev/null|grep inet|grep -v 127.0.0.1|grep -v inet6|tr "/" " "|awk '{print $$2}'`
 build-arg+=--build-arg local_url=http://$(local_ip)/dist-files
 
-.PHONY: build clean clearclean upgrade tag push
+.PHONY: build clean clearclean upgrade
 
 build:
 	@echo "Build $(app_name):$(current_tag)"
 	@docker build --force-rm $(build-arg) -t $(app_name):$(current_tag) .
-	@echo "Add tag: $(app_name):latest"
-	@docker tag $(app_name):$(current_tag) $(app_name):latest
+	@echo "Add tag: $(app_name):local-latest"
+	@docker tag $(app_name):$(current_tag) $(app_name):local-latest
 
 # 清理悬空的镜像（无TAG）及停止的容器 
 clearclean: clean
@@ -37,17 +38,8 @@ clean:
 	@echo "Clean all images for current application..."
 	@docker images | grep "$(app_name) " | awk '{print $$3}' | sort -u | xargs -L 1 docker rmi -f
 
-tag:
-	@echo "Add tag: $(local_registory)/$(app_name):latest"
-	@docker tag $(app_name):latest $(local_registory)/$(app_name):latest
-
-push: tag
-	@echo "Push: $(local_registory)/$(app_name):latest"
-	@docker push $(local_registory)/$(app_name):latest
-	@echo "Push: $(app_name):latest"
-	@docker push $(app_name):latest
-
 # 更新所有 colovu 仓库的镜像 
 upgrade: 
 	@echo "Upgrade all images..."
 	@docker images | grep 'colovu' | grep -v '<none>' | grep -v "latest-" | awk '{print $$1":"$$2}' | sort -u | xargs -L 1 docker pull
+
