@@ -18,14 +18,14 @@ RUN select_source ${apt_source};
 
 # 下载并解压软件包
 RUN set -eux; \
-	appVersion=1.12; \
+	appVersion=1.13; \
 	appName=gosu-"$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
 	appKeys="0xB42F6819007F00F88E364FD4036A9C25BF357DD4"; \
 	[ ! -z ${local_url} ] && localURL=${local_url}/gosu; \
-	appUrls="${localURL:-} \
+	appUrls="${localURL:-}/${appVersion} \
 		https://github.com/tianon/gosu/releases/download/${appVersion} \
 		"; \
-	download_pkg install ${appName} "${appUrls}" -g "${appKeys}"; \
+	download_pkg install ${appName} "${appUrls}" ; \
 	chmod +x /usr/local/bin/${appName};
 
 # 镜像生成 ========================================================================
@@ -34,7 +34,7 @@ FROM debian:buster-slim
 # sources.list 可使用版本：default / tencent / ustc / aliyun / huawei
 ARG apt_source=aliyun
 
-ENV APP_NAME=debian-os
+ENV APP_NAME=debian-buster
 
 LABEL \
 	"Version"="v10" \
