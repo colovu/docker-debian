@@ -48,7 +48,7 @@ LOG() {
     else
         debugInfo="${CYAN}${APP_NAME:-}"
     fi  
-    stderr_print "${debugInfo} ${MAGENTA}$(date "+%T")${RESET} ${*}"
+    stderr_print "${debugInfo} ${MAGENTA}$(date "+%F %T.%3N")${RESET} ${*}"
 }
 
 # 输出调试类日志信息，尽量少使用
