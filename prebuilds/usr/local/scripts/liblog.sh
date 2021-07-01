@@ -38,8 +38,7 @@ stderr_print() {
 
 # 输出实际日志信息
 # 参数:
-#   $1 - 日志类型
-#   $2 - 日志信息
+#   $1 - 日志信息
 LOG() {
     local -r bool="${ENV_DEBUG:-false}"
     shopt -s nocasematch
@@ -53,8 +52,7 @@ LOG() {
 
 # 输出调试类日志信息，尽量少使用
 # 参数:
-#   $1 - 日志类型
-#   $2 - 日志信息
+#   $1 - 日志信息
 LOG_D() {
     local -r bool="${ENV_DEBUG:-false}"
     shopt -s nocasematch
@@ -65,24 +63,21 @@ LOG_D() {
 
 # 输出提示信息类日志信息
 # 参数:
-#   $1 - 日志类型
-#   $2 - 日志信息
+#   $1 - 日志信息
 LOG_I() {
     LOG "${GREEN}INF${RESET}: ${*}"
 }
 
 # 输出警告类日志信息至sterr
 # 参数:
-#   $1 - 日志类型
-#   $2 - 日志信息
+#   $1 - 日志信息
 LOG_W() {
     LOG "${YELLOW}WRN${RESET}: ${*}"
 }
 
 # 输出错误类日志信息至sterr，并退出脚本
 # 参数:
-#   $1 - 日志类型
-#   $2 - 日志信息
+#   $1 - 日志信息
 LOG_E() {
     LOG "${RED}ERR${RESET}: ${*}"
 }
