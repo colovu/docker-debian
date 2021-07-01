@@ -1,20 +1,37 @@
-# Ver: 1.4 by Endial Fang (endial@126.com)
+# Ver: 1.8 by Endial Fang (endial@126.com)
 #
 
-# 预处理 =========================================================================
-ARG registry_url="registry.cn-shenzhen.aliyuncs.com"
-FROM ${registry_url}/colovu/dbuilder as builder
+# 可变参数 ========================================================================
 
-# sources.list 可使用版本：default / tencent / ustc / aliyun / huawei
+# 设置当前应用名称及版本
+ARG app_name=debian-buster
+ARG app_version=10
+
+# 设置默认仓库地址，默认为 阿里云 仓库
+ARG registry_url="registry.cn-shenzhen.aliyuncs.com"
+
+# 设置 apt-get 源：default / tencent / ustc / aliyun / huawei
 ARG apt_source=aliyun
 
 # 编译镜像时指定用于加速的本地服务器地址
 ARG local_url=""
 
-WORKDIR /usr/local
+
+# 0. 预处理 ======================================================================
+FROM ${registry_url}/colovu/dbuilder as builder
+
+# 声明需要使用的全局可变参数
+ARG app_name
+ARG app_version
+ARG registry_url
+ARG apt_source
+ARG local_url
 
 # 选择软件包源(Optional)，以加速后续软件包安装
 RUN select_source ${apt_source};
+
+# 设置工作目录
+WORKDIR /usr/local
 
 # 下载并解压软件包
 RUN set -eux; \
@@ -28,13 +45,15 @@ RUN set -eux; \
 	download_pkg install ${appName} "${appUrls}" ; \
 	chmod +x /usr/local/bin/${appName};
 
-# 镜像生成 ========================================================================
+# 1. 生成镜像 =====================================================================
 FROM debian:buster-slim
 
-# sources.list 可使用版本：default / tencent / ustc / aliyun / huawei
-ARG apt_source=aliyun
-
-ENV APP_NAME=debian-buster
+# 声明需要使用的全局可变参数
+ARG app_name
+ARG app_version
+ARG registry_url
+ARG apt_source
+ARG local_url
 
 LABEL \
 	"Version"="v10" \
@@ -64,6 +83,7 @@ RUN set -eux; \
 	\
 	ln -fs /usr/share/zoneinfo/Asia/Shanghai /etc/localtime; \
 	dpkg-reconfigure -f noninteractive tzdata; 
+
 ENV LANG=en_US.UTF-8 \
 	LANGUAGE=en_US.UTF-8 \
 	LC_ALL=en_US.UTF-8
