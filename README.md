@@ -8,7 +8,9 @@
 
 **镜像信息：**
 
-* 镜像地址：registry.cn-shenzhen.aliyuncs.com/colovu/debian:latest
+* 镜像地址：
+  * 阿里云: registry.cn-shenzhen.aliyuncs.com/colovu/debian:latest
+  * Docker Hub: colovu/debian:latest
   * 依赖镜像：debian:buster-slim
 
 **与官方镜像差异：**
