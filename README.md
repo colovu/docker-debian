@@ -13,6 +13,8 @@
   * Docker Hub: colovu/debian:latest
   * 依赖镜像：debian:buster-slim
 
+> 后续相关命令行默认使用`[Docker Hub](https://hub.docker.com)`镜像服务器做说明
+
 **与官方镜像差异：**
 
 - 增加 `default、tencent、ustc、aliyun、huawei` 源配置文件，可在编译时通过 `ARG` 变量`apt_source`进行选择
@@ -25,11 +27,12 @@
 - 默认增加 curl 软件，用作镜像健康检查
 
 
-## **TL;DR**
+## TL;DR
 
 Docker 快速启动命令：
 
 ```shell
+# 从 Docker Hub 服务器下载镜像并启动
 $ docker run -it registry.cn-shenzhen.aliyuncs.com/colovu/debian /bin/bash
 ```
 
@@ -44,7 +47,7 @@ $ docker run -it registry.cn-shenzhen.aliyuncs.com/colovu/debian /bin/bash
 **下载镜像：**
 
 ```shell
-$ docker pull registry.cn-shenzhen.aliyuncs.com/colovu/debian:latest
+$ docker pull colovu/debian:latest
 ```
 
 - latest：为镜像的 TAG，可针对性选择不同的 TAG 进行下载
@@ -59,12 +62,12 @@ $ docker images
 **命令行方式运行容器：**
 
 ```shell
-$ docker run -it --rm registry.cn-shenzhen.aliyuncs.com/colovu/debian:latest /bin/bash
+$ docker run -it --rm colovu/debian:latest /bin/bash
 ```
 
 - `-it`：使用交互式终端启动容器
 - `--rm`：退出时删除容器
-- `registry.cn-shenzhen.aliyuncs.com/colovu/debian:latest`：包含版本信息的镜像地址及名称
+- `colovu/debian:latest`：镜像名称及版本标签
 - `/bin/bash`：在容器中执行`/bin/bash`命令；如果不执行命令，容器会在启动后立即结束并退出。
 
 以该方式启动后，直接进入容器的命令行操作界面。如果需要退出，直接使用命令`exit`退出。
@@ -72,12 +75,12 @@ $ docker run -it --rm registry.cn-shenzhen.aliyuncs.com/colovu/debian:latest /bi
 **后台方式运行容器：**
 
 ```shell
-$ docker run -d --name test registry.cn-shenzhen.aliyuncs.com/colovu/debian:latest tail /dev/stderr
+$ docker run -d --name test colovu/debian:latest tail /dev/stderr
 ```
 
 - `--name test`：命名容器为`test`
 - `-d`：以后台进程方式启动容器
-- `registry.cn-shenzhen.aliyuncs.com/colovu/debian:latest`：包含TAG信息的镜像地址及名称
+- `colovu/debian:latest`：镜像名称及版本标签
 - `tail /dev/stderr`：在容器中执行`tail /dev/stderr`命令，以防止容器直接退出
 
 
