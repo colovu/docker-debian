@@ -13,7 +13,7 @@ print_usage() {
   echo "  -h, --help                 Show this help message and exit."
   echo ""
   echo "Examples:"
-  echo "  - Unpack package"
+  echo "  - Install bash & curl"
   echo "    \$ install_pkg bash curl"
   echo ""
 }
@@ -56,4 +56,3 @@ apt-get purge -y --auto-remove
 apt-get autoclean -y
 
 rm -r /var/lib/apt/lists /var/cache/apt/archives || :
-

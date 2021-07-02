@@ -25,10 +25,10 @@ print_usage() {
   LOG ""
   LOG "Examples:"
   LOG "  - Unpack package"
-  LOG "    \$ download_pkg unpack redis-5.0.8.tar.gz \"http://download.redis.io/releases/\""
+  LOG "    \$ download_pkg unpack redis-5.0.8.tar.gz \"http://download.redis.io/releases\""
   LOG ""
   LOG "  - Verify and Install package"
-  LOG "    \$ download_pkg install redis-5.0.8.tar.gz \"http://download.redis.io/releases/\" --checksum 42cf86a114d2a451b898fcda96acd4d01062a7dbaaad2801d9164a36f898f596"
+  LOG "    \$ download_pkg install redis-5.0.8.tar.gz \"http://download.redis.io/releases\" -s 42cf86a114d2a451b898fcda96acd4d01062a7dbaaad2801d9164a36f898f596"
   LOG ""
 }
 
@@ -161,4 +161,3 @@ case "$1" in
 		fi
 		;;
 esac
-
