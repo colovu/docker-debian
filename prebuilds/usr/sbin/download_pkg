@@ -153,7 +153,8 @@ case "$1" in
 			LOG_E "Invalid or corrupt '$PACKAGE' package."
 			exit 1
 		fi
-		LOG_I "Unpacking $PACKAGE" 
+		LOG_I "Unpacking $PACKAGE to $CACHE_ROOT" 
+    cd $CACHE_ROOT
 		if which bsdtar >/dev/null 2>&1; then
   			bsdtar -xf $CACHE_ROOT/$PACKAGE
 		else
