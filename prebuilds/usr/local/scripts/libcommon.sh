@@ -23,7 +23,7 @@ print_welcome_info() {
 
 # 根据需要打印欢迎信息
 print_image_welcome() {
-    if [[ "$(id -u)" = "0" ]]; then
+    if [[ ! "$(id -u)" = "0" ]]; then
         print_welcome_info
     fi
 }
