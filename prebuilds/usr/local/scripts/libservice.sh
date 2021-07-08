@@ -7,7 +7,7 @@
 
 # 加载依赖项
 . /usr/local/scripts/liblog.sh              # 日志输出函数库
-. /opt/bitnami/scripts/libvalidations.sh    # 数据有效性检测函数库
+. /usr/local/scripts/libvalidations.sh    # 数据有效性检测函数库
 
 # 函数列表
 
