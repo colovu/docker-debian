@@ -11,9 +11,14 @@
 # 域名解析
 # 参数:
 #   $1 - 需要解析的主机名
+#   $2 - IP 地址版本 v4/v6, 为空时解析所有版本
+# 返回值:
+#   IP地址
 dns_lookup() {
     local host="${1:?host is missing}"
-    getent ahosts "$host" | awk '/STREAM/ {print $1 }'
+    local ip_version="${2:-}"
+
+    getent "ahosts${ip_version}" "$host" | awk '/STREAM/ {print $1 }' | head -n 1
 }
 
 # 尝试解析域名并返回对应的 IP
@@ -21,6 +26,8 @@ dns_lookup() {
 #   $1 - 主机名
 #   $2 - 尝试次数
 #   $3 - 重试间隔时间（秒）
+# 返回值:
+#   IP地址
 wait_for_dns_lookup() {
     local hostname="${1:?hostname is missing}"
     local retries="${2:-5}"
@@ -38,6 +45,8 @@ wait_for_dns_lookup() {
 }
 
 # 获取当前主机 IP
+# 返回值:
+#   IP地址
 get_machine_ip() {
     local -a ip_addresses
     local hostname
@@ -52,11 +61,11 @@ get_machine_ip() {
     echo "${ip_addresses[0]}"
 }
 
-# Check if the provided argument is a resolved hostname
+# 检测指定的主机名是否可解析
 # 参数:
 #   $1 - 待检测的主机名
 # 返回值:
-#   布尔值
+#   true / false
 is_hostname_resolved() {
     local -r host="${1:?missing value}"
     if [[ -n "$(dns_lookup "$host")" ]]; then

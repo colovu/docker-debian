@@ -11,6 +11,8 @@
 # 检测数据是否为整数
 # 参数:
 #   $1 - 待检测的数据
+# 返回值:
+#   true / false
 is_int() {
     local -r int="${1:?missing value}"
     if [[ "$int" =~ ^-?[0-9]+ ]]; then
@@ -23,6 +25,8 @@ is_int() {
 # 检测数据是否为正整数
 # 参数:
 #   $1 - 待检测的数据
+# 返回值:
+#   true / false
 is_positive_int() {
     local -r int="${1:?missing value}"
     if is_int "$int" && (( "${int}" >= 0 )); then
@@ -35,6 +39,8 @@ is_positive_int() {
 # 检测数据是否为布尔值 '1' 或字符串 'yes/true'
 # 参数:
 #   $1 - 待检测的数据
+# 返回值:
+#   true / false
 is_boolean_yes() {
     local -r bool="${1:-}"
     # comparison is performed without regard to the case of alphabetic characters
@@ -49,6 +55,8 @@ is_boolean_yes() {
 # 检测数据是否为字符串 'yes/no'
 # 参数:
 #   $1 - 待检测的数据
+# 返回值:
+#   true / false
 is_yes_no_value() {
     local -r bool="${1:-}"
     if [[ "$bool" =~ ^(yes|no)$ ]]; then
@@ -61,6 +69,8 @@ is_yes_no_value() {
 # 检测数据是否为字符串 'true/false'
 # 参数:
 #   $1 - 待检测的数据
+# 返回值:
+#   true / false
 is_true_false_value() {
     local -r bool="${1:-}"
     if [[ "$bool" =~ ^(true|false)$ ]]; then
@@ -73,6 +83,8 @@ is_true_false_value() {
 # 检测提供的参数是否为空字符串或未定义
 # 参数:
 #   $1 - 待检测的数据
+# 返回值:
+#   true / false
 is_empty_value() {
     local -r val="${1:-}"
     if [[ -z "$val" ]]; then
@@ -83,10 +95,12 @@ is_empty_value() {
 }
 
 # 检测数据是否为有效的端口号
+# 标志位:
+#   -unprivileged - 没有特权的端口
 # 参数:
 #   $1 - 待检测的数据
 # 返回值:
-#   布尔值 或 错误消息
+#   true / false 或 错误消息
 validate_port() {
     local value
     local unprivileged=0
@@ -145,6 +159,8 @@ validate_port() {
 # 检测数据是否为有效的IPv4地址
 # 参数:
 #   $1 - 待检测的数据
+# 返回值:
+#   0 / 1
 validate_ipv4() {
     local ip="${1:?ip is missing}"
     local stat=1
@@ -159,8 +175,13 @@ validate_ipv4() {
 }
 
 # 校验字符串格式
+# 标志位:
+#   -min-length - 最小长度
+#   -max-length - 最大长度
 # 参数:
 #   $1 - 待检测的数据
+# 返回值:
+#   0 / 1
 validate_string() {
     local string
     local min_length=-1

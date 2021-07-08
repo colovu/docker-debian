@@ -100,17 +100,6 @@ process_init_files() {
     done
 }
 
-# 检测当前是否为 root 用户
-is_root() {
-    if [[ "$(id -u)" = "0" ]]; then
-        LOG_D "Run as root."
-        true
-    else
-        LOG_D "Run as non-root: $(id -u)"
-        false
-    fi
-}
-
 # 检测当前脚本是被直接执行的，还是从其他脚本中使用 "source" 调用的
 is_sourced() {
     [ "${#FUNCNAME[@]}" -ge 2 ] \

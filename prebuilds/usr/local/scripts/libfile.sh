@@ -48,11 +48,11 @@ replace_in_file() {
 
     local result
 
-    # 因部分系统兼容性问题，需要防止使用 'sed in-place' 方式操作
+    del=$'\001' # Use a non-printable character as a 'sed' delimiter to avoid issues
     if [[ $posix_regex = true ]]; then
-        result="$(sed -E "s@$match_regex@$substitute_regex@g" "$filename")"
+        result="$(sed -E "s${del}${match_regex}${del}${substitute_regex}${del}g" "$filename")"
     else
-        result="$(sed "s@$match_regex@$substitute_regex@g" "$filename")"
+        result="$(sed "s${del}${match_regex}${del}${substitute_regex}${del}g" "$filename")"
     fi
     echo "$result" > "$filename"
 }
@@ -75,4 +75,19 @@ remove_in_file() {
         result="$(sed "/$match_regex/d" "$filename")"
     fi
     echo "$result" > "$filename"
+}
+
+# 在符合条件的行后增加文本
+# 参数:
+#   $1 - 文件名
+#   $2 - 正则表达式
+#   $3 - 待增加的文本
+append_in_file() {
+    local file="${1:?missing file}"
+    local match_regex="${2:?missing pattern}"
+    local value="${3:?missing value}"
+
+    # We read the file in reverse, replace the first match (0,/pattern/s) and then reverse the results again
+    result="$(tac "$file" | sed -E "0,/($match_regex)/s||${value}\n\1|" | tac)"
+    echo "$result" > "$file"
 }

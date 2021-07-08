@@ -8,6 +8,17 @@
 
 # 函数列表
 
+# 确保指定的 文件/路径 所属权为指定的 用户/组
+# 参数:
+#   $1 - 文件路径
+#   $2 - 用户
+ensure_owned_by() {
+    local path="${1:?path is missing}"
+    local owner="${2:?owner is missing}"
+
+    chown "$owner":"$owner" "$path"
+}
+
 # 检测目录是否存在，如果不存在则创建，同时修改为指定的用户
 # 参数:
 #   $1 - 目录路径
@@ -18,7 +29,7 @@ ensure_dir_exists() {
 
     mkdir -p "${dir}"
     if [[ -n $owner ]]; then
-        chown "$owner":"$owner" "$dir"
+        ensure_owned_by "$dir" "$owner"
     fi
 }
 
@@ -29,6 +40,23 @@ is_dir_empty() {
     local dir="${1:?missing directory}"
 
     if [[ ! -e "$dir" ]] || [[ -z "$(ls -A "$dir")" ]]; then
+        true
+    else
+        false
+    fi
+}
+
+# 检测指定的路径当前用户是否可写入
+# 参数:
+#   $1 - 文件或路径
+# 返回值:
+#   true / false
+is_writable() {
+    local file="${1:?missing file}"
+    local dir
+    dir="$(dirname "$file")"
+
+    if [[ ( -f "$file" && -w "$file" ) || ( ! -f "$file" && -d "$dir" && -w "$dir" ) ]]; then
         true
     else
         false
@@ -84,21 +112,21 @@ configure_permissions_ownership() {
             LOG_D "Check $p"
             if [[ -n ${dir_mode} ]]; then
                 LOG_D "Change permissions to ${dir_mode} of directories in $p"
-                find -L "$p" -type d -print | xargs -i chmod "${dir_mode}" '{}'
+                find -L "$p" -type d -exec chmod "$dir_mode" {} \;
             fi
             if [[ -n ${file_mode} ]]; then
                 LOG_D "Change permissions to ${file_mode} of files in $p"
-                find -L "$p" -type f -print | xargs -i chmod "${file_mode}" '{}'
+                find -L "$p" -type f -exec chmod "$file_mode" {} \;
             fi
             if [[ -n $user ]] && [[ -n ${group} ]]; then
                 LOG_D "Change ownership to ${user}:${group} of files and directories in $p"
-                find -L "$p" \( \! -user ${user} -or \! -group ${group} \) -print | xargs -i chown -L "${user}":"${group}" '{}'
+                chown -LR "$user":"$group" "$p"
             elif [[ -n $user ]] && [[ -z $group ]]; then
                 LOG_D "Change user to ${user} of files and directories in $p"
-                find -L "$p" \! -user ${user} -print | xargs -i chown -L "${user}" '{}'
+                chown -LR "$user" "$p"
             elif [[ -z $user ]] && [[ -n $group ]]; then
                 LOG_D "Change group to ${group} of files and directories in $p"
-                find -L "$p" \! -group ${group} -print | xargs -i chgrp -L "${group}" '{}'
+                chgrp -LR "$group" "$p"
             fi
         else
             LOG_E "$p does not exist"
