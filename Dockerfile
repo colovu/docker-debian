@@ -40,7 +40,7 @@ COPY prebuilds /
 RUN select_source ${apt_source}
 
 # 增加 NSS_WRAPPER 支持；安装 curl 工具
-RUN install_pkg locales apt-utils libnss-wrapper curl
+RUN install_pkg locales apt-utils libnss-wrapper curl net-tools
 
 # 增加locales支持，并设置默认为 UTF-8
 RUN set -eux; \
