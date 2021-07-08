@@ -6,10 +6,10 @@
 image_name :=colovu/debian
 
 # 定义默认镜像仓库地址
-registry_url :=registry.cn-shenzhen.aliyuncs.com
+registry_url :=docker.io
 
 # 定义系统默认使用的源服务器，包含：default / tencent / ustc / aliyun / huawei
-apt_source :=aliyun
+apt_source :=tencent
 
 # 定义镜像TAG，类似：
 # 	<镜像名>:<分支名>-<7位Git ID>		# Git 仓库且无文件修改直接编译 	
